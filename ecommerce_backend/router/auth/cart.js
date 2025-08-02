@@ -5,15 +5,13 @@ import { CartModel } from "../../db.utils/model.js";
 const AddtoCartrouter = express.Router();
 
 /**
- * @route POST /cart
- * @desc Add product to user's cart
+ * @route GET /cart
+ * @desc Get user's cart
  * @access Private
  */
-
-// AddtoCartrouter.js or cart.js
 AddtoCartrouter.get("/", authApi, async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user.id; // ✅ Fixed from _id to id
 
     const cart = await CartModel.findOne({ userId });
 
@@ -30,9 +28,13 @@ AddtoCartrouter.get("/", authApi, async (req, res) => {
   }
 });
 
-
+/**
+ * @route DELETE /cart/:productId
+ * @desc Remove item from cart
+ * @access Private
+ */
 AddtoCartrouter.delete("/:productId", authApi, async (req, res) => {
-  const userId = req.user._id;
+  const userId = req.user.id; // ✅ Fixed from _id to id
   const productId = req.params.productId;
 
   try {
@@ -42,7 +44,6 @@ AddtoCartrouter.delete("/:productId", authApi, async (req, res) => {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-    // Filter out the item with matching productId
     cart.items = cart.items.filter(
       item => item.productId.toString() !== productId
     );
@@ -57,9 +58,14 @@ AddtoCartrouter.delete("/:productId", authApi, async (req, res) => {
   }
 });
 
+/**
+ * @route POST /cart
+ * @desc Add product to user's cart
+ * @access Private
+ */
 AddtoCartrouter.post("/", authApi, async (req, res) => {
   try {
-    const userId = req.user._id; // Now properly set by authApi
+    const userId = req.user.id; // ✅ Fixed from _id to id
     const { _id, name, price, image } = req.body;
 
     if (!_id || !name || price === undefined || !image) {
@@ -87,16 +93,18 @@ AddtoCartrouter.post("/", authApi, async (req, res) => {
 
     await cart.save();
     res.status(200).json({ message: "Item added to cart", cart });
-    
+
   } catch (err) {
     console.error("Cart Error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
+/**
+ * @route GET /cart (basic test route)
+ */
 AddtoCartrouter.get("/cart", (req, res) => {
   res.status(200).json({ message: "Cart API works. Use POST/GET/DELETE methods via frontend." });
 });
-
 
 export default AddtoCartrouter;

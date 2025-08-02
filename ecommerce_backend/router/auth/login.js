@@ -43,18 +43,16 @@ LoginRouter.post("/", async (req, res) => {
 // In your login route
 const token = jwt.sign(
   {
-    id: user._id,  // Must match auth middleware expectation
-    role: user.role
+    id: user._id,
+    role: user.role,
   },
-  jwtSecret,
-  { expiresIn: '1h' }  // Always set expiration
+  process.env.JWT_SECRET, // ✅ This must match
+  { expiresIn: "1h" }
 );
     // Secure response - remove password
     const userResponse = {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role
+        id: user._id,
+    role: user.role
     };
 
     res.status(200).json({ 

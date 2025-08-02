@@ -1,16 +1,4 @@
 <?php include('header.php') ?>
-<script>
-  // Run this on all admin pages
-  document.addEventListener("DOMContentLoaded", function () {
-   
-    const userToken = localStorage.getItem("userToken");
-
-    if (!userToken) {
-      // If no token, redirect to login page
-      window.location.href = "login.php"; // adjust the path based on your file structure
-    }
-  });
-</script>
 
 <section id="hero">
   <h4>Trade-in-fair</h4>
@@ -175,7 +163,39 @@
   document.addEventListener("DOMContentLoaded", loadFeaturedProducts);
 </script>
 <script>
-  
+  async function addToCart(product) {
+    console.log(localStorage.getItem("userToken")); // or adminToken if admin
+
+    try {
+     const token = localStorage.getItem("userToken"); // or use getCookie("userToken")
+console.log("Sending token:", token);
+
+const res = await fetch("http://localhost:8000/cart", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer " + token
+  },
+        body: JSON.stringify({
+       _id: product._id, 
+          name: product.name,
+          price: product.price,
+          image: product.image,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        alert("✅ Item added to cart!");
+      } else {
+        alert(result.message || "Failed to add to cart.");
+      }
+    } catch (err) {
+      console.error("Add to cart error:", err);
+      alert("Server error");
+    }
+  }
 </script>
 
 

@@ -16,7 +16,7 @@ import ProductRouter from "./router/auth/product.js";
 import AddtoCartrouter from "./router/auth/cart.js";
 import orderRouter from "./router/auth/order.js";
 import CustomerRouter from "./router/auth/customer.js";
-
+import cookieParser from "cookie-parser";
 // Load environment variables from .env file
 dotenv.config();
 
@@ -27,6 +27,11 @@ await mongooseDb();
 
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json()); 
+server.use(cookieParser());
+server.get("/check-cookie", (req, res) => {
+  console.log(req.cookies);
+  res.send("Cookies: " + JSON.stringify(req.cookies));
+});
 
 // Middleware
 server.use(express.json());
